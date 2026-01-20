@@ -1,0 +1,14 @@
+fastapi
+uvicorn
+sqlalchemy>=2.0
+asyncpg
+aiohttp
+celery
+redis
+pydantic>=2.0
+alembic
+pytest
+pytest-asyncio
+pydantic-settings
+requests
+psycopg2-binary
