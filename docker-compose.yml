@@ -3,7 +3,7 @@ version: "3.9"
 services:
   db:
     image: postgres:16
-    # container_name: postgres           # CHANGED: убрал container_name — не обязателен и мешает при запуске в CI/кластере
+    # container_name: postgres
     env_file:
       - .env
     environment:
@@ -11,7 +11,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
     ports:
-      - "5433:5432"                       # ok, если хочешь пробросить на 5433 на хосте
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -19,18 +19,18 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
-    restart: unless-stopped               # CHANGED: рекомендую политику рестарта
+    restart: unless-stopped
 
   redis:
     image: redis:7
-    # container_name: redis                # CHANGED: убрал container_name
+    # container_name: redis
     ports:
       - "6379:6379"
-    restart: unless-stopped               # CHANGED: рекомендую политику рестарта
+    restart: unless-stopped
 
   app:
     build: .
-    # container_name: fastapi_app          # CHANGED: убрал container_name
+    # container_name: fastapi_app
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000
     env_file:
       - .env
@@ -39,12 +39,11 @@ services:
       - redis
     ports:
       - "8000:8000"
-    restart: unless-stopped               # CHANGED: рекомендую политику рестарта
-    # CHANGED: совет — добавить entrypoint/wait-for-db перед запуском, чтобы приложение не падало при старте до готовности БД
+    restart: unless-stopped
 
   celery_worker:
     build: .
-    # container_name: celery_worker        # CHANGED: убрал container_name
+    # container_name: celery_worker
     command: celery -A app.celery_app.celery worker --loglevel=info
     env_file:
       - .env
@@ -55,7 +54,7 @@ services:
 
   celery_beat:
     build: .
-    # container_name: celery_beat          # CHANGED: убрал container_name
+    # container_name: celery_beat
     command: celery -A app.celery_app.celery beat --loglevel=info
     env_file:
       - .env
